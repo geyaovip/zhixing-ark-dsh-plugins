@@ -1,7 +1,7 @@
 {
   "name": "dsh-plugin-zhixing-ark-video-script",
-  "version": "1.0.0",
-  "description": "知行方舟品牌短视频脚本：按商品卖点生成可拍摄的口播、分镜和字幕。",
+  "version": "1.0.1",
+  "description": "按商品卖点生成品牌短视频脚本、分镜和字幕，提供可用于配音或口播成片的纯口播稿。",
   "author": "知行方舟",
   "homepage": "https://zhixingark.cn/",
   "keywords": ["dsh-plugin", "deepseek-harness", "agent-skills", "video", "storyboard"],
