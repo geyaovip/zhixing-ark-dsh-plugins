@@ -1,0 +1,28 @@
+{
+  "name": "dsh-plugin-zhixing-ark-geo",
+  "version": "1.0.0",
+  "description": "知行方舟GEO 品牌可见度，查询已授权品牌项目和已有 GEO 报告，解读样本、评分、竞品与引用。",
+  "author": "知行方舟",
+  "homepage": "https://zhixingark.cn/",
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "mcp",
+    "geo"
+  ],
+  "type": "module",
+  "main": "index.js",
+  "files": [
+    "index.js",
+    "shared",
+    "cordis.patch.yml"
+  ],
+  "engines": {
+    "dsh": ">=0.2.2-rc.2 <0.3.0-0"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}
