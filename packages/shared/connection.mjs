@@ -33,9 +33,11 @@ async function post(url, body) {
   return response.json();
 }
 
-function grant(clientId, response, scope) {
+function grant(clientId, response, readScope, allowedScopes) {
+  const scopes = typeof response.scope === 'string' ? response.scope.split(/ +/u) : [];
   if (
-    response.scope !== scope || response.token_type !== 'Bearer' ||
+    !scopes.includes(readScope) || new Set(scopes).size !== scopes.length ||
+    scopes.some(scope => !allowedScopes.includes(scope)) || response.token_type !== 'Bearer' ||
     !/^[A-Za-z0-9_-]{43}$/.test(response.access_token ?? '') ||
     !/^[A-Za-z0-9_-]{43}$/.test(response.refresh_token ?? '') ||
     !Number.isInteger(response.expires_in) || response.expires_in < 1
@@ -45,7 +47,7 @@ function grant(clientId, response, scope) {
   return {
     kind: 'grant',
     payload: {
-      clientId, access: response.access_token, refresh: response.refresh_token,
+      clientId, access: response.access_token, refresh: response.refresh_token, scopes,
       expiresAt: Date.now() + response.expires_in * 1000,
     },
   };
@@ -99,9 +101,11 @@ export function createConnection(credentials, { app, label, tools }, options = {
   const serviceOrigin = options.origin ?? origin;
   const launchBrowser = options.launchBrowser ?? openBrowser;
   const resource = serviceOrigin + '/api/v1/mcp/' + app;
-  const scope = app + '.read';
+  const readScope = app + '.read';
+  const recordsScope = app + '.records';
   const key = 'zhixing-ark/' + app;
-  const expectedTools = new Set(['ark_context', ...tools.map(tool => tool[0])]);
+  const mutationTool = app + '_prepare_record_change';
+  const expectedTools = new Set(['ark_context', 'ark_action_status', mutationTool, ...tools.map(tool => tool[0])]);
   const connectHelp = '请在会话中要求连接知行方舟 ' + label + '，然后在浏览器选择企业并确认只读授权。';
 
   let pending;
@@ -114,10 +118,11 @@ export function createConnection(credentials, { app, label, tools }, options = {
     attempt.server.close();
   }
 
-  async function start() {
+  async function start(records = false) {
     if (pending) return '浏览器授权正在进行，请返回浏览器完成，或取消本次授权后重试。';
 
     const attempt = { verifier: pkce(), state: pkce(), busy: false };
+    const requested = records ? [readScope, recordsScope] : [readScope];
     const server = createServer(async (req, res) => {
       if (!attempt.redirectUri) {
         respond(res, 400, '无效的知行方舟授权回调。');
@@ -149,11 +154,12 @@ export function createConnection(credentials, { app, label, tools }, options = {
           respond(res, 400, latest);
           return;
         }
-        await credentials.modifyRecord(key, async () => grant(attempt.clientId, await post(serviceOrigin + '/api/v1/oauth/token', {
+        const saved = await credentials.modifyRecord(key, async () => grant(attempt.clientId, await post(serviceOrigin + '/api/v1/oauth/token', {
           grant_type: 'authorization_code', client_id: attempt.clientId, code,
           code_verifier: attempt.verifier, redirect_uri: attempt.redirectUri, resource,
-        }), scope));
-        latest = label + ' 只读授权成功，请返回 DeepSeek Harness 查询。';
+        }), readScope, requested));
+        latest = label + (saved?.payload.scopes.includes(recordsScope)
+          ? ' 已获得记录提案权限。每项变更仍需在知行方舟确认。' : ' 只读授权成功，请返回 DeepSeek Harness 查询。');
         respond(res, 200, latest);
       } catch {
         latest = '授权凭证交换或保存失败。请重新发起授权。';
@@ -186,9 +192,10 @@ export function createConnection(credentials, { app, label, tools }, options = {
       authorization.search = new URLSearchParams({
         client_id: attempt.clientId, redirect_uri: attempt.redirectUri, response_type: 'code',
         code_challenge: createHash('sha256').update(attempt.verifier).digest('base64url'),
-        code_challenge_method: 'S256', resource, scope, state: attempt.state,
+        code_challenge_method: 'S256', resource, scope: requested.join(' '), state: attempt.state,
       });
-      latest = '已在浏览器打开授权页。请选择企业并确认只读权限，随后返回 Harness 查询。';
+      latest = records ? '已打开授权页。请选择企业并勾选允许准备记录提案，然后返回 Harness。'
+        : '已在浏览器打开授权页。请选择企业并确认只读权限，随后返回 Harness 查询。';
       attempt.timer = setTimeout(() => {
         if (attempt.busy) return;
         latest = '浏览器授权已超时，可以重新发起。';
@@ -203,9 +210,12 @@ export function createConnection(credentials, { app, label, tools }, options = {
     }
   }
 
-  async function getAccess() {
+  async function getAccess(needsRecords) {
     const record = await credentials.readRecord(key);
     if (record?.kind !== 'grant') throw new Error('[AUTH_REQUIRED] ' + connectHelp);
+    if (needsRecords && !record.payload.scopes?.includes(recordsScope)) {
+      throw new Error('[AUTH_REQUIRED] 当前连接是只读。请明确要求开通记录提案，再在授权页勾选对应权限。');
+    }
     if (record.payload.expiresAt > Date.now() + 60_000) return record.payload.access;
     try {
       const fresh = await credentials.modifyRecord(key, async current => {
@@ -213,9 +223,10 @@ export function createConnection(credentials, { app, label, tools }, options = {
         const { clientId, refresh } = current.payload;
         return grant(clientId, await post(serviceOrigin + '/api/v1/oauth/token', {
           grant_type: 'refresh_token', client_id: clientId, refresh_token: refresh, resource,
-        }), scope);
+        }), readScope, current.payload.scopes ?? [readScope]);
       });
       if (fresh?.kind !== 'grant') throw new Error(connectHelp);
+      if (needsRecords && !fresh.payload.scopes?.includes(recordsScope)) throw new Error('[AUTH_REQUIRED] 记录提案授权已失效。');
       return fresh.payload.access;
     } catch (error) {
       if (error.status === 401 || error.code === 'invalid_grant') {
@@ -227,12 +238,12 @@ export function createConnection(credentials, { app, label, tools }, options = {
 
   async function call(tool, args) {
     try {
-      const access = await getAccess();
+      const access = await getAccess(tool === mutationTool || tool === 'ark_action_status');
       if (tool === 'tools/list') {
         const result = await rpc(resource, tool, {}, access);
         return describeTools(result, expectedTools);
       }
-      if (!expectedTools.has(tool)) throw new Error('此插件只支持指定的只读查询。');
+      if (!expectedTools.has(tool)) throw new Error('此插件只支持指定的业务工具。');
       const result = await rpc(resource, 'tools/call', { name: tool, arguments: args }, access);
       if (result.isError) {
         throw queryFailure(result);

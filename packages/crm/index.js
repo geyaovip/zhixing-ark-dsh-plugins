@@ -9,7 +9,10 @@ const { page, page_size } = paging;
 export const config = {
   app: 'crm',
   label: 'CRM',
+  records: '处理运营任务草稿。fields 为 title、goal、planText。删除取消本人未提交草稿',
   tools: [
+    ['crm_tasks', '查询运营任务和状态，以便获取真实 ID 和版本。', { page: paging.page, page_size: paging.page_size, status: { type: 'string', enum: ['draft','pending_confirmation','ready','in_progress','completed','cancelled'] } }],
+    ['crm_task_detail', '读取可见运营任务的当前版本和方案。', { id }, ['id']],
     ['crm_workbench', '查询本人的线索、商机、跟进和服务待办摘要。结果有范围上限。'],
     ['crm_customers', '分页搜索有权客户及购买指标，获取真实客户 ID。', paging],
     ['crm_customer_detail', '按真实客户 ID 查询档案、脱敏联系方式及指定币种购买指标。', { id, currency }, ['id']],

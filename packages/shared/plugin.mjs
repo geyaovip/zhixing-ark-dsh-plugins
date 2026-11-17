@@ -9,7 +9,7 @@ export const paging = {
 export const id = { type: 'string', pattern: '^[0-9a-fA-F-]{36}$' };
 
 export function createPlugin(config) {
-  const { app, label, tools } = config;
+  const { app, label, tools, records } = config;
   return function apply(ctx) {
     const connection = createConnection(ctx.credentials, config);
     ctx.on('dispose', connection.dispose);
@@ -30,17 +30,27 @@ export function createPlugin(config) {
       });
     }
 
-    register('connect', '仅当用户明确要求连接知行方舟 ' + label + ' 或为该应用换企业时调用。打开浏览器，由用户选择企业并确认只读授权。', connection.start);
+    register('connect', '仅当用户明确要求连接知行方舟 ' + label + ' 或为该应用换企业时调用。打开浏览器，由用户选择企业并确认只读授权。', () => connection.start());
     register('connection_status', '查看知行方舟 ' + label + ' 的本机连接状态及撤权入口。需要确认所选企业和服务端权限时调用当前应用的 context 工具。', () => connection.status(true));
     register('cancel_connection', '仅在用户明确要求取消知行方舟 ' + label + ' 正在进行的浏览器授权时调用。', connection.cancel);
     register('context', '核对知行方舟 ' + label + ' 当前授权企业与只读范围。查询前可先核对企业。', () => connection.call('ark_context', {}));
-    register('tools', '核对当前岗位在知行方舟 ' + label + ' 可用的只读业务工具。', () => connection.call('tools/list', {}));
+    register('tools', '核对当前岗位在知行方舟 ' + label + ' 可用的业务工具。', () => connection.call('tools/list', {}));
     register('open_workbench', '获取知行方舟 ' + label + ' 的工作台入口。已授权时直达对应企业，其他情况提供登录入口。', async () => {
       const { saved } = await connection.status();
       if (!saved) return { url: 'https://zhixingark.cn/login' };
       const { tenantKey } = await connection.call('ark_context', {});
       return { url: 'https://zhixingark.cn/t/' + encodeURIComponent(tenantKey) + '/' + app };
     });
+
+    register('connect_records', '仅当用户明确要求开通知行方舟 ' + label + ' 的记录提案权限时调用。打开浏览器，请用户勾选该权限。', () => connection.start(true));
+    register('prepare_record_change', records + '。传 operation、requestKey（新 UUID）；新增或修改传 fields；修改或删除传实时查询得到的 id 和 version；删除另传 reason。此工具只生成提案，把 confirmationUrl 交给用户亲自确认。', args =>
+      connection.call(app + '_prepare_record_change', args), {
+      operation: { type: 'string', enum: ['create', 'update', 'delete'] }, requestKey: id, id,
+      version: { type: 'integer', minimum: 1, maximum: 2147483647 },
+      fields: { type: 'object', additionalProperties: true }, reason: { type: 'string', minLength: 1, maxLength: 500 },
+    }, ['operation', 'requestKey']);
+    register('action_status', '用提案 actionId 查询是否已经确认及业务回执，pending 表示尚未写入。', args =>
+      connection.call('ark_action_status', args), { actionId: id }, ['actionId']);
 
     for (const [remote, description, properties, required] of tools) {
       register(remote.slice(app.length + 1), '知行方舟 ' + label + '。' + description,

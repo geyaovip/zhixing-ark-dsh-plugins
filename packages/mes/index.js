@@ -6,6 +6,7 @@ export const inject = ['tools', 'credentials'];
 export const config = {
   app: 'mes',
   label: 'MES',
+  records: '处理生产计划草稿。新增 fields 为 code、productId、bomId、targetQty、dueAt、note；修改 targetQty、dueAt 或 note；删除取消未发布计划',
   tools: [
     ['mes_production_overview', '查询生产进度、逾期、待审核和不良，区分报工与审核。'],
     ['mes_list_records', '分页查询有权物料、已有 BOM、计划、工单或报工。status 用于非 materials，orderId 用于 reports，planId 用于 orders。', {

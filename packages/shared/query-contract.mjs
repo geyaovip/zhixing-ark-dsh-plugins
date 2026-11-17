@@ -49,6 +49,9 @@ export function normalizeQuery(tool, arg, properties, required) {
     if (rule.type === 'integer' && (!Number.isInteger(value) || value < rule.minimum || value > rule.maximum)) {
       throw validationError(field + ' 应为 ' + rule.minimum + ' 至 ' + rule.maximum + ' 的整数。');
     }
+    if (rule.type === 'object' && (!value || typeof value !== 'object' || Array.isArray(value))) {
+      throw validationError(field + ' 应为对象。');
+    }
     if (rule.type === 'boolean' && typeof value !== 'boolean') throw validationError(field + ' 应为 true 或 false。');
     if (rule.type === 'string' && (typeof value !== 'string' || value.length < rule.minLength || value.length > rule.maxLength)) {
       throw validationError(field + ' 的文字或长度不符合工具定义。');
@@ -89,6 +92,6 @@ export function queryFailure(result) {
 
 export function describeTools(result, allowed) {
   return result.tools
-    .filter(item => allowed.has(item.name) && item.annotations?.readOnlyHint === true)
-    .map(({ name, description, inputSchema }) => ({ name, description, inputSchema, readOnly: true }));
+    .filter(item => allowed.has(item.name))
+    .map(({ name, description, inputSchema, annotations }) => ({ name, description, inputSchema, readOnly: annotations?.readOnlyHint === true }));
 }

@@ -16,18 +16,13 @@ try {
     for (const file of ['package.json', 'README.md', 'cordis.patch.yml']) {
       copyFileSync(join(source, file), join(target, file));
     }
-    if (app === 'product-video-script') {
-      for (const file of ['index.js', 'SKILL.md']) copyFileSync(join(source, file), join(target, file));
-    } else {
-      const files = app === 'manufacturing'
-        ? ['query-contract.mjs'] : ['connection.mjs', 'plugin.mjs', 'query-contract.mjs'];
-      mkdirSync(join(target, 'shared'));
-      for (const file of files) copyFileSync(join(root, 'shared', file), join(target, 'shared', file));
-      for (const file of app === 'manufacturing' ? ['index.js', 'connection.js'] : ['index.js']) {
-        const original = readFileSync(join(source, file), 'utf8');
-        writeFileSync(join(target, file), original.replaceAll('../shared/', './shared/'));
-      }
+    if (app === 'product-video-script') copyFileSync(join(source, 'SKILL.md'), join(target, 'SKILL.md'));
+    mkdirSync(join(target, 'shared'));
+    for (const file of ['connection.mjs', 'plugin.mjs', 'query-contract.mjs']) {
+      copyFileSync(join(root, 'shared', file), join(target, 'shared', file));
     }
+    const original = readFileSync(join(source, 'index.js'), 'utf8');
+    writeFileSync(join(target, 'index.js'), original.replaceAll('../shared/', './shared/'));
     const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
     const result = spawnSync(npm, ['pack', '--ignore-scripts', '--pack-destination', dest], {
       cwd: target, stdio: 'inherit', shell: process.platform === 'win32',

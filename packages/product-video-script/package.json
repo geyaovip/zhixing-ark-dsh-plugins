@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-zhixing-ark-video-script",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "按商品卖点生成品牌短视频脚本、分镜和字幕，提供可用于配音或口播成片的纯口播稿。",
   "author": "知行方舟",
   "homepage": "https://zhixingark.cn/",
@@ -8,7 +8,7 @@
   "keywords": ["dsh-plugin", "deepseek-harness", "agent-skills", "video", "storyboard"],
   "type": "module",
   "main": "index.js",
-  "files": ["index.js", "cordis.patch.yml", "SKILL.md"],
+  "files": ["index.js", "shared", "cordis.patch.yml", "SKILL.md"],
   "engines": { "dsh": ">=0.2.2-rc.2 <0.3.0-0" },
   "dsh": { "bundle": { "patch": "./cordis.patch.yml" } }
 }

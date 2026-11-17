@@ -7,6 +7,7 @@ const status = { type: 'string', maxLength: 40 };
 export const config = {
   app: 'erp',
   label: 'ERP',
+  records: '处理采购草稿。新增 fields 包含 number、supplierId 和 lines（productId、quantity、可选 unitPrice）；修改 note 或 quantities（lineId、基础单位 quantity）；删除仅取消本人未提交草稿',
   tools: [
     ['erp_master_search', '用 kind=products 查询商品，kind=suppliers 查询供应商。使用关键词匹配并返回可用于详情查询的真实 ID。', { ...paging, kind: { type: 'string', enum: ['products', 'suppliers'] } }, ['kind']],
     ['erp_inventory_overview', '查询商品在库、待发、在途和补货量，按返回的时点和分页解释。', paging],
