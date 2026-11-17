@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process';
 import { createHash, randomBytes } from 'node:crypto';
 import { createServer } from 'node:http';
+import { describeTools, queryFailure } from '../shared/query-contract.mjs';
 
 const origin = 'https://zhixingark.cn';
 const scope = 'manufacturing.read';
@@ -93,6 +94,9 @@ async function rpc(resource, method, params, access) {
     body: JSON.stringify({ jsonrpc: '2.0', id, method, params }),
   });
   const message = await response.json();
+  if (message.jsonrpc === '2.0' && message.id === id && message.error?.code === -32602) {
+    throw queryFailure({ structuredContent: { code: 'INVALID_INPUT' } });
+  }
   if (message.jsonrpc !== '2.0' || message.id !== id || message.error || !message.result) {
     throw new Error('知行方舟 MCP 返回了无效结果。');
   }
@@ -201,7 +205,7 @@ export function createConnection(credentials, options = {}) {
 
   async function getAccess() {
     const record = await credentials.readRecord(key);
-    if (record?.kind !== 'grant') throw new Error(connectHelp);
+    if (record?.kind !== 'grant') throw new Error('[AUTH_REQUIRED] ' + connectHelp);
     if (record.payload.expiresAt > Date.now() + 60_000) return record.payload.access;
     try {
       const fresh = await credentials.modifyRecord(key, async current => {
@@ -226,18 +230,20 @@ export function createConnection(credentials, options = {}) {
       const access = await getAccess();
       if (tool === 'tools/list') {
         const result = await rpc(resource, tool, {}, access);
-        return result.tools.filter(item => expectedTools.has(item.name))
-          .map(item => ({ name: item.name, readOnly: item.annotations?.readOnlyHint === true }));
+        return describeTools(result, expectedTools);
       }
       if (!expectedTools.has(tool)) throw new Error('此插件只支持指定的制造业查询。');
       const result = await rpc(resource, 'tools/call', { name: tool, arguments: args }, access);
       if (result.isError) {
-        throw new Error('查询未完成，请核对企业授权、岗位权限和查询参数。');
+        throw queryFailure(result);
       }
       return result.structuredContent ?? result.content;
     } catch (error) {
-      if (error.status === 401 || error.status === 403) {
-        throw new Error('知行方舟连接已失效或当前企业无权查询。' + connectHelp);
+      if (error.status === 401) throw new Error('[AUTH_REQUIRED] 知行方舟连接已失效。' + connectHelp);
+      if (error.status === 403) throw queryFailure({ structuredContent: { code: 'FORBIDDEN' } });
+      if (error.status === 429) throw new Error('[RATE_LIMITED] 查询过于频繁，请稍后重试。');
+      if (error.status >= 500 || ['TimeoutError', 'AbortError'].includes(error.name) || error instanceof TypeError) {
+        throw queryFailure({ structuredContent: { code: 'UNAVAILABLE' } });
       }
       throw error;
     }
@@ -246,11 +252,24 @@ export function createConnection(credentials, options = {}) {
   return {
     start,
     call,
-    status: async () => {
+    status: async (verify = false) => {
       const saved = (await credentials.describeRecord(key)).configured;
+      let verified = false;
+      let context;
+      let verificationError;
+      if (verify && saved && !pending) {
+        try {
+          const result = await call('ark_context', {});
+          context = { appId: result.appId, tenantKey: result.tenantKey, tenantName: result.tenantName, scopes: result.scopes };
+          verified = true;
+        } catch (error) {
+          verificationError = error.message;
+        }
+      }
       return {
         saved,
         pending: Boolean(pending),
+        ...(verify ? { verified, context, verificationError } : {}),
         message: latest ?? (saved ? '本机已保存授权，查询时会核对服务端权限。' : '尚未发起授权。'),
         management: serviceOrigin + '/connect/connections',
       };

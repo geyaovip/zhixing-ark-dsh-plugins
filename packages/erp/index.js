@@ -8,7 +8,7 @@ export const config = {
   app: 'erp',
   label: 'ERP',
   tools: [
-    ['erp_master_search', '分页查询商品或供应商，获取用于查询的真实 ID。', { ...paging, kind: { type: 'string', enum: ['products', 'suppliers'] } }, ['kind']],
+    ['erp_master_search', '用 kind=products 查询商品，kind=suppliers 查询供应商。使用关键词匹配并返回可用于详情查询的真实 ID。', { ...paging, kind: { type: 'string', enum: ['products', 'suppliers'] } }, ['kind']],
     ['erp_inventory_overview', '查询商品在库、待发、在途和补货量，按返回的时点和分页解释。', paging],
     ['erp_inventory_balances', '查询在库、预留和可用量。按仓库查询时使用真实仓库 ID。', { ...paging, warehouseId: id }],
     ['erp_purchase_list', '查询有权采购单及状态。审批通过与实物入库是两个节点。', { ...paging, status }],

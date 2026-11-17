@@ -12,7 +12,7 @@ export const config = {
       ...paging, type: { type: 'string', enum: ['materials', 'boms', 'plans', 'orders', 'reports'] },
       status: { type: 'string', maxLength: 40 }, orderId: id, planId: id,
     }, ['type']],
-    ['mes_inspect', '按真实 ID 查询有权物料、已有 BOM、计划、工单或报工的详情。关联记录有数量上限。', {
+    ['mes_inspect', '用列表返回的 ID 查详情。列表类型 orders 对应详情 order，boms 对应 bom。关联记录有数量上限。', {
       type: { type: 'string', enum: ['material', 'bom', 'plan', 'order', 'report'] }, id,
     }, ['type', 'id']],
   ],

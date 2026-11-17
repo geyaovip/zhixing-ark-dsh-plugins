@@ -6,12 +6,12 @@
 
 | 插件 | 能力 | npm 包名 | GitHub 安装包 |
 | --- | --- | --- | --- |
-| [制造业进销存](packages/manufacturing) | 登录知行方舟并选择企业后，按岗位权限查询订单、缺料、库存预警、生产进度和批次追溯。仅申请只读授权。 | `dsh-plugin-zhixing-ark-manufacturing` | [制造业进销存 1.0.0](https://github.com/geyaovip/zhixing-ark-dsh-plugins/releases/download/v1.0.0/dsh-plugin-zhixing-ark-manufacturing-1.0.0.tgz) |
-| [品牌短视频脚本](packages/product-video-script) | 根据商品卖点生成分镜、口播和字幕，提供可用于配音或口播成片的纯口播稿。 | `dsh-plugin-zhixing-ark-video-script` | [品牌短视频脚本 1.0.1](https://github.com/geyaovip/zhixing-ark-dsh-plugins/releases/download/video-script-v1.0.1/dsh-plugin-zhixing-ark-video-script-1.0.1.tgz) |
-| [ERP 履约](packages/erp) | 按岗位权限查询库存、补货、采购和销售合同。 | `dsh-plugin-zhixing-ark-erp` | [ERP 履约 1.0.0](https://github.com/geyaovip/zhixing-ark-dsh-plugins/releases/download/apps-v1.0.0/dsh-plugin-zhixing-ark-erp-1.0.0.tgz) |
-| [CRM 跟进](packages/crm) | 按岗位权限查询客户、线索、商机、跟进和本人待办。 | `dsh-plugin-zhixing-ark-crm` | [CRM 跟进 1.0.0](https://github.com/geyaovip/zhixing-ark-dsh-plugins/releases/download/apps-v1.0.0/dsh-plugin-zhixing-ark-crm-1.0.0.tgz) |
-| [MES 生产跟踪](packages/mes) | 查询生产进度、工单、报工和已有 BOM。 | `dsh-plugin-zhixing-ark-mes` | [MES 生产跟踪 1.0.0](https://github.com/geyaovip/zhixing-ark-dsh-plugins/releases/download/apps-v1.0.0/dsh-plugin-zhixing-ark-mes-1.0.0.tgz) |
-| [GEO 品牌可见度](packages/geo) | 查询品牌项目和已有报告，解读样本、竞品与引用。 | `dsh-plugin-zhixing-ark-geo` | [GEO 品牌可见度 1.0.0](https://github.com/geyaovip/zhixing-ark-dsh-plugins/releases/download/apps-v1.0.0/dsh-plugin-zhixing-ark-geo-1.0.0.tgz) |
+| [制造业进销存](packages/manufacturing) | 登录知行方舟并选择企业后，按岗位权限查询订单、缺料、库存预警、生产进度和批次追溯。仅申请只读授权。 | `dsh-plugin-zhixing-ark-manufacturing` | [制造业进销存 1.1.0](https://github.com/geyaovip/zhixing-ark-dsh-plugins/releases/download/business-v1.1.0/dsh-plugin-zhixing-ark-manufacturing-1.1.0.tgz) |
+| [品牌短视频脚本](packages/product-video-script) | 根据商品卖点生成分镜、口播和字幕，提供可用于配音或口播成片的纯口播稿。 | `dsh-plugin-zhixing-ark-video-script` | [品牌短视频脚本 1.0.2](https://github.com/geyaovip/zhixing-ark-dsh-plugins/releases/download/business-v1.1.0/dsh-plugin-zhixing-ark-video-script-1.0.2.tgz) |
+| [ERP 履约](packages/erp) | 按岗位权限查询库存、补货、采购和销售合同。 | `dsh-plugin-zhixing-ark-erp` | [ERP 履约 1.1.0](https://github.com/geyaovip/zhixing-ark-dsh-plugins/releases/download/business-v1.1.0/dsh-plugin-zhixing-ark-erp-1.1.0.tgz) |
+| [CRM 跟进](packages/crm) | 按岗位权限查询客户、线索、商机、跟进和本人待办。 | `dsh-plugin-zhixing-ark-crm` | [CRM 跟进 1.1.0](https://github.com/geyaovip/zhixing-ark-dsh-plugins/releases/download/business-v1.1.0/dsh-plugin-zhixing-ark-crm-1.1.0.tgz) |
+| [MES 生产跟踪](packages/mes) | 查询生产进度、工单、报工和已有 BOM。 | `dsh-plugin-zhixing-ark-mes` | [MES 生产跟踪 1.1.0](https://github.com/geyaovip/zhixing-ark-dsh-plugins/releases/download/business-v1.1.0/dsh-plugin-zhixing-ark-mes-1.1.0.tgz) |
+| [GEO 品牌可见度](packages/geo) | 查询品牌项目和已有报告，解读样本、竞品与引用。 | `dsh-plugin-zhixing-ark-geo` | [GEO 品牌可见度 1.1.0](https://github.com/geyaovip/zhixing-ark-dsh-plugins/releases/download/business-v1.1.0/dsh-plugin-zhixing-ark-geo-1.1.0.tgz) |
 
 也可以在同一窗口粘贴 GitHub 安装包链接，或下载后输入本地压缩包的路径。
 
