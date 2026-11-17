@@ -1,9 +1,10 @@
 {
   "name": "dsh-plugin-zhixing-ark-manufacturing",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "知行方舟制造业进销存：按企业和岗位授权查询制造订单、缺料、库存预警、生产进度和批次追溯。",
   "author": "知行方舟",
   "homepage": "https://zhixingark.cn/",
+  "repository": { "type": "git", "url": "git+https://github.com/geyaovip/zhixing-ark-dsh-plugins.git", "directory": "packages/manufacturing" },
   "keywords": ["dsh-plugin", "deepseek-harness", "mcp", "manufacturing", "inventory"],
   "type": "module",
   "main": "index.js",

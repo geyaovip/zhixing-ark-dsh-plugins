@@ -1,9 +1,10 @@
 {
   "name": "dsh-plugin-zhixing-ark-mes",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "知行方舟MES 生产跟踪，查询生产进度、工单、报工和已有 BOM。",
   "author": "知行方舟",
   "homepage": "https://zhixingark.cn/",
+  "repository": { "type": "git", "url": "git+https://github.com/geyaovip/zhixing-ark-dsh-plugins.git", "directory": "packages/mes" },
   "keywords": [
     "dsh-plugin",
     "deepseek-harness",

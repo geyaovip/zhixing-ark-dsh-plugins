@@ -1,9 +1,10 @@
 {
   "name": "dsh-plugin-zhixing-ark-erp",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "知行方舟ERP 履约，查询商品库存、补货量、采购单和销售合同。",
   "author": "知行方舟",
   "homepage": "https://zhixingark.cn/",
+  "repository": { "type": "git", "url": "git+https://github.com/geyaovip/zhixing-ark-dsh-plugins.git", "directory": "packages/erp" },
   "keywords": [
     "dsh-plugin",
     "deepseek-harness",

@@ -1,9 +1,10 @@
 {
   "name": "dsh-plugin-zhixing-ark-video-script",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "按商品卖点生成品牌短视频脚本、分镜和字幕，提供可用于配音或口播成片的纯口播稿。",
   "author": "知行方舟",
   "homepage": "https://zhixingark.cn/",
+  "repository": { "type": "git", "url": "git+https://github.com/geyaovip/zhixing-ark-dsh-plugins.git", "directory": "packages/product-video-script" },
   "keywords": ["dsh-plugin", "deepseek-harness", "agent-skills", "video", "storyboard"],
   "type": "module",
   "main": "index.js",

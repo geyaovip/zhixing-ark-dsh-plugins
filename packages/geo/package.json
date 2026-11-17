@@ -1,9 +1,10 @@
 {
   "name": "dsh-plugin-zhixing-ark-geo",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "知行方舟GEO 品牌可见度，查询已授权品牌项目和已有 GEO 报告，解读样本、评分、竞品与引用。",
   "author": "知行方舟",
   "homepage": "https://zhixingark.cn/",
+  "repository": { "type": "git", "url": "git+https://github.com/geyaovip/zhixing-ark-dsh-plugins.git", "directory": "packages/geo" },
   "keywords": [
     "dsh-plugin",
     "deepseek-harness",
