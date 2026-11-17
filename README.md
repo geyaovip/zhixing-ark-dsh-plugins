@@ -1,8 +1,8 @@
 # 知行方舟 · DeepSeek Harness 插件
 
-各插件可独立安装。支持 DeepSeek Harness 0.2.2-rc.2。
+各插件可独立安装。已验证 DeepSeek Harness 0.2.2-rc.3 加载以下安装包。
 
-打开「插件 → 已安装 → 添加插件」，输入下表对应的 npm 包名。npm 官方源和中国大陆镜像源均可安装。安装完成后启用插件。
+打开「插件 → 已安装 → 添加插件」，粘贴下表对应的 GitHub 安装包链接。安装后启用插件。
 
 | 插件 | 能力 | npm 包名 | GitHub 安装包 |
 | --- | --- | --- | --- |
@@ -13,8 +13,8 @@
 | [MES 生产跟踪](packages/mes) | 查询生产进度、工单、报工和已有 BOM。 | `dsh-plugin-zhixing-ark-mes` | [MES 生产跟踪 1.1.0](https://github.com/geyaovip/zhixing-ark-dsh-plugins/releases/download/business-v1.1.0/dsh-plugin-zhixing-ark-mes-1.1.0.tgz) |
 | [GEO 品牌可见度](packages/geo) | 查询品牌项目和已有报告，解读样本、竞品与引用。 | `dsh-plugin-zhixing-ark-geo` | [GEO 品牌可见度 1.1.0](https://github.com/geyaovip/zhixing-ark-dsh-plugins/releases/download/business-v1.1.0/dsh-plugin-zhixing-ark-geo-1.1.0.tgz) |
 
-也可以在同一窗口粘贴 GitHub 安装包链接，或下载后输入本地压缩包的路径。
+也可以下载压缩包，再输入本地文件路径。通过 npm 包名安装时，请核对安装窗口显示的版本。
 
 各企业应用的只读授权可在 [知行方舟已连接应用](https://zhixingark.cn/connect/connections) 管理。短视频脚本在对话中使用「品牌短视频脚本」技能生成，之后可在「品牌内容 → AI 工具」使用文字配音、口播成片和字幕工具。
 
-ERP、CRM、MES 和 GEO 的源码共用授权组件。运行 `node packages/pack-apps.mjs` 可将四个独立安装包生成到 `packages/dist/`。
+ERP、CRM、MES 和 GEO 共用授权组件，五个业务插件共用参数检查。运行 `node packages/pack-apps.mjs` 可将六个独立安装包生成到 `packages/dist/`。
