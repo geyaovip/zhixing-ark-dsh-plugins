@@ -40,12 +40,13 @@ function checkedAssets(directory) {
   return assets;
 }
 
-async function packageVersions(name) {
-  const response = await fetch(`${registry}/${name}`, {
-    headers: { Accept: 'application/vnd.npm.install-v1+json', 'Cache-Control': 'no-cache' },
+async function registryMetadata(path, missingAllowed = false) {
+  const response = await fetch(`${registry}/${path}`, {
+    headers: { Accept: 'application/json', 'Cache-Control': 'no-cache' },
     signal: AbortSignal.timeout(30_000),
   });
-  if (!response.ok) throw new Error(`npm metadata request for ${name} failed with HTTP ${response.status}`);
+  if (missingAllowed && response.status === 404) return null;
+  if (!response.ok) throw new Error(`npm metadata request for ${path} failed with HTTP ${response.status}`);
   return response.json();
 }
 
@@ -57,23 +58,23 @@ function isNewer(version, latest) {
 }
 
 async function publishPlan(assets) {
-  const registryEntries = await Promise.all(assets.map(asset => packageVersions(asset.name)));
-  return assets.filter((asset, index) => {
+  const pending = await Promise.all(assets.map(async asset => {
     const { name, version, integrity } = asset;
-    const npmEntry = registryEntries[index];
-    const existing = npmEntry.versions?.[version];
+    const npmEntry = await registryMetadata(name);
+    const existing = npmEntry.versions?.[version] ?? await registryMetadata(`${name}/${version}`, true);
     if (existing) {
       if (existing.dist?.integrity !== integrity) throw new Error(`npm integrity conflict for ${name}@${version}`);
       console.log(`Already published with matching integrity: ${name}@${version}`);
-      return false;
+      return null;
     }
     const latest = npmEntry['dist-tags']?.latest;
     if (!new RegExp(`^${versionPattern}$`).test(latest) || !isNewer(version, latest)) {
       throw new Error(`Refusing to replace npm latest ${latest} with ${name}@${version}`);
     }
     if (asset.repository !== repository) throw new Error(`Missing npm provenance repository for ${name}@${version}`);
-    return true;
-  });
+    return asset;
+  }));
+  return pending.filter(Boolean);
 }
 
 const assets = checkedAssets(process.argv[2]);
