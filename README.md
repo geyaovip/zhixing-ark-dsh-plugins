@@ -21,6 +21,6 @@ ERP、CRM、MES 和 GEO 共用授权组件，五个业务插件共用参数检�
 
 ## 发布到 npm
 
-使用发布提交生成安装包，为这次发布的每个 `.tgz` 生成 SHA-256 校验项，并把安装包和 `SHA256SUMS.txt` 一起上传到 GitHub Release 草稿。发布正式 Release 后，`publish-npm.yml` 会验证安装包、比对 npm 注册表并发布尚未上线的新版。每个插件独立提升版本号。
+使用发布提交生成安装包，为这次发布的每个 `.tgz` 生成 SHA-256 校验项，并把安装包和 `SHA256SUMS.txt` 一起上传到 GitHub Release 草稿。通过 GitHub 网页或已登录的 `gh` CLI 发布正式 Release 后，`publish-npm.yml` 会验证安装包、比对 npm 注册表并发布尚未上线的新版。每个插件独立提升版本号。
 
 在 GitHub Actions 可以用正式 Release 的标签手动验证或重跑。默认只校验。已经发布且摘要一致的包会跳过，版本冲突会在提交前报错。六个包在 npm 里均使用此工作流的 Trusted Publishing 授权。
